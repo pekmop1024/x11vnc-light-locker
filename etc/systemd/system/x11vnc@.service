@@ -1,0 +1,14 @@
+[Unit]
+Description=VNC Server for X11
+Requires=graphical.target
+After=graphical.target
+
+[Service]
+Environment=FD_XDM=1
+Type=simple
+ExecStart=/usr/local/bin/x11vnc-wrapper %i
+SuccessExitStatus=2
+Restart=always
+
+[Install]
+WantedBy=graphical.target

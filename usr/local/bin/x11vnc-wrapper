@@ -1,0 +1,17 @@
+#!/bin/bash
+
+adisplay=$1
+xmcookie='/run/lightdm/root/:$1'
+username=`who | grep "(:${adisplay})" | awk '{print $1}'`
+
+if [ ! -f $xmcookie ] & [ ! -z "$username" ]; then
+    xmcookie=/home/$username/.Xauthority
+else
+    if [ ! -f $xmcookie ] & [ -z "$username" ]; then
+        xmcookie=/var/lib/lightdm/.Xauthority
+    fi
+fi
+
+/usr/bin/x11vnc -display WAIT:$adisplay -auth $xmcookie -forever -shared -rfbauth /etc/x11vnc.passwd -autoport 5900 -repeat -o /var/log/x11vnc-display-$adisplay.log
+
+exit $?

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+startvnc() {
+	CURRENTDISPLAY=`ps -fC Xorg | grep vt$(sed 's/tty//g' /sys/class/tty/tty0/active) | sed -e 's/\(^\)\(.*\)\/run\/lightdm\/root\/\:\s*\(.*\)/\1\3/; s/ .*//'`
+	if [[ $CURRENTDISPLAY ]]; then
+		/usr/bin/systemctl stop x11vnc@*
+		/usr/bin/systemctl start x11vnc@$CURRENTDISPLAY
+		CURRENTDISPLAY=false
+		ISX11VNC=false
+	fi
+}
+
+# check if x11vnc is started already on active display and start, if not
+if [[ ! `netstat -pant | grep x11vnc` ]]; then
+	startvnc
+fi
+
+# check in loop for display change and restart x11vnc
+while /usr/bin/inotifywait -qq -e modify /sys/class/tty/tty0/active; do
+	startvnc
+done

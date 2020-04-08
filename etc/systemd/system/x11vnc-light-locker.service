@@ -1,0 +1,12 @@
+[Unit]
+Description=X11VNC displays autodetect for light-locker
+Requires=graphical.target
+After=graphical.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/x11vnc-light-locker
+Restart=always
+
+[Install]
+WantedBy=graphical.target
